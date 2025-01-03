@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donation Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #e63946;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+        .container {
+            margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        form label {
+            font-weight: bold;
+        }
+        form input, form textarea, form button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        form button {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #d62828;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Blood Donation Tracker</h1>
+        <p>Track and contribute to blood donations across the United States</p>
+    </header>
+
+    <div id="map"></div>
+
+    <div class="container">
+        <h2>Submit Your Donation</h2>
+        <form id="donationForm">
+            <label for="state">State:</label>
+            <input type="text" id="state" name="state" placeholder="Enter state (e.g., California)" required>
+
+            <label for="details">Donation Details:</label>
+            <textarea id="details" name="details" placeholder="Enter donation details" required></textarea>
+
+            <button type="submit">Submit Donation</button>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([37.8, -96], 4); // Centered on the US
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        // Example data: Add a marker
+        const donations = [
+            { state: 'California', lat: 37.7749, lng: -122.4194, details: '10 units of blood donated.' },
+            { state: 'Texas', lat: 31.9686, lng: -99.9018, details: '20 units of blood donated.' },
+        ];
+
+        donations.forEach(donation => {
+            L.marker([donation.lat, donation.lng]).addTo(map)
+                .bindPopup(`<strong>${donation.state}</strong><br>${donation.details}`);
+        });
+
+        // Handle form submission
+        document.getElementById('donationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const state = document.getElementById('state').value;
+            const details = document.getElementById('details').value;
+
+            // Mock coordinates for the example
+            const mockCoordinates = {
+                'California': [37.7749, -122.4194],
+                'Texas': [31.9686, -99.9018],
+                'Florida': [27.9944, -81.7603],
+                'New York': [40.7128, -74.0060],
+            };
+
+            const coords = mockCoordinates[state] || [37.8, -96]; // Default to center of the US if state not found
+
+            // Add marker to map
+            L.marker(coords).addTo(map)
+                .bindPopup(`<strong>${state}</strong><br>${details}`)
+                .openPopup();
+
+            // Clear the form
+            document.getElementById('state').value = '';
+            document.getElementById('details').value = '';
+
+            alert(`Donation successfully submitted for ${state}!`);
+        });
+    </script>
+</body>
+</html>
